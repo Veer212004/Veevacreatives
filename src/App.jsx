@@ -8,7 +8,8 @@ const CONTACT = {
   email: "veevacreatives26@gmail.com",
   ig: "https://instagram.com/veeva_creatives?rpxt=bWpodGVsZTEzc2ky",
 };
-const ENQUIRY_ENDPOINT = "/api/enquiries";
+// Enquiries are emailed to CONTACT.email through FormSubmit (first submission needs a one-time activation click in the inbox).
+const ENQUIRY_ENDPOINT = "https://formsubmit.co/ajax/" + CONTACT.email;
 
 const PORTFOLIO_PAGES = [
   "/assets/portfolio/pdf-page-1.jpg",
@@ -258,7 +259,7 @@ function useReveal() {
           // stagger delays must not linger and slow down hover effects
           setTimeout(() => (e.target.style.transitionDelay = ""), 1600);
         }),
-      { threshold: 0.12, rootMargin: "0px 0px -6% 0px" },
+      { threshold: 0.12 },
     );
     document.querySelectorAll(".rv").forEach((n) => io.observe(n));
     return () => io.disconnect();
@@ -271,7 +272,7 @@ const Leaf = () => (
   </svg>
 );
 const Head = ({ e, t, s }) => (
-  <div className="rv rv-l">
+  <div className="rv">
     <div className="eyebrow">{e}</div>
     <h2 className="h2">{t}</h2>
     <div className="line" />
@@ -1587,53 +1588,6 @@ const SITES = {
     },
   },
 };
-/* ===== extra "real website" content for each demo ===== */
-const EXTRA = {
-  urban: {
-    logo: "🔥", promo: "Free dessert for bookings of 4+ this weekend", art: ["🍛", "🍢", "🫓"], rating: "4.8 · 2,300 reviews",
-    menuEmoji: ["🧀", "🍗", "🍛", "🥘", "🍚", "🍮", "☕"], tileEmoji: ["🔥", "🍚", "🥙", "🍮", "☕", "🕯️"],
-    stats: [["4.8★", "Guest rating"], ["12k+", "Plates served monthly"], ["15 yrs", "Of family recipes"]],
-    reviews: [["Best butter chicken in town. Warm room, quick service.", "Ananya R."], ["The tandoor starters are unreal. Booked again for Sunday.", "Kiran M."], ["Perfect for family dinners, and the biryani is the star.", "Rohit S."]],
-    info: ["12 Sample Street, Your City", "+91 98765 43210", "hello@urbanspice.example"], cta: ["Hungry already?", "Table for tonight? Reserve in 30 seconds."],
-  },
-  business: {
-    logo: "◆", promo: "Free 30-minute intro call for new clients", art: ["📈", "🧭", "🤝"], rating: "4.9 · 180 client reviews",
-    cardEmoji: { Services: ["🎯", "⚙️", "🧠"] },
-    stats: [["120+", "Companies advised"], ["94%", "Client retention"], ["8 yrs", "Of experience"]],
-    reviews: [["They turned a vague idea into a clear 90-day plan.", "Meera K., Founder"], ["Calm, sharp and always on time. Highly recommended.", "Dev P., COO"], ["Our operations finally run without firefighting.", "Sana A., Director"]],
-    info: ["4th Floor, Sample Tower, Your City", "+91 98765 00000", "team@modernbusiness.example"], cta: ["Ready to grow?", "Tell us where you want to be in a year."],
-  },
-  p: {
-    logo: "✺", promo: "Open for new projects from next month", art: ["🎨", "✏️", "💻"], rating: "5.0 · 40 projects",
-    cardEmoji: { Projects: ["☕", "🎶", "📱", "🖥️"] },
-    stats: [["40+", "Projects shipped"], ["6 yrs", "Designing"], ["100%", "Remote friendly"]],
-    reviews: [["Aria understood our brand in one call.", "Café owner"], ["Posters were ready before the deadline, and they were stunning.", "Event organiser"], ["Clean UI, clean handoff, zero drama.", "Startup founder"]],
-    info: ["Remote, worldwide", "+91 98765 11111", "hello@ariastudio.example"], cta: ["Have a project?", "Share a few details and get a reply within a day."],
-  },
-  g: {
-    logo: "⚡", promo: "First week free for new members", art: ["🏋️", "🔥", "⏱️"], rating: "4.7 · 900 members",
-    cardEmoji: { Programs: ["🏋️", "⚡", "🧘", "🎯"], Plans: ["🥉", "🥈", "🥇"] },
-    stats: [["900+", "Active members"], ["18", "Certified trainers"], ["40", "Classes every week"]],
-    reviews: [["Lost 9 kg in four months. The trainers actually care.", "Aman T."], ["The 6:30 AM strength class changed my routine.", "Priya N."], ["Clean gym, great equipment and no crowd.", "Joel D."]],
-    info: ["88 Fitness Lane, Your City", "+91 98765 22222", "join@ironpulse.example"], cta: ["Start today", "Your first week is on us. No contract."],
-  },
-  s: {
-    logo: "✿", promo: "Bridal trial bookings open for the wedding season", art: ["💇‍♀️", "💅", "✨"], rating: "4.9 · 1,100 reviews",
-    cardEmoji: { Services: ["✂️", "🎨", "🧖‍♀️", "👰"] }, tileEmoji: ["🎨", "👰", "✂️", "💅", "🧖‍♀️", "💄"],
-    stats: [["1,100+", "Happy clients"], ["12", "Expert stylists"], ["9 yrs", "In the city"]],
-    reviews: [["My bridal look was exactly what I imagined.", "Ishita V."], ["Best colour work I've had, and no damage.", "Neha G."], ["Relaxing, hygienic and on time. Love it.", "Pooja L."]],
-    info: ["21 Rose Avenue, Your City", "+91 98765 33333", "book@glowandco.example"], cta: ["Treat yourself", "Pick a slot and we'll take care of the rest."],
-  },
-  c: {
-    logo: "T", promo: "Free shipping on orders above ₹1,999", art: ["👕", "👖", "👜"], rating: "4.6 · 3,400 orders",
-    shopEmoji: ["👔", "👖", "👗", "👚", "🧵", "👜"],
-    stats: [["3,400+", "Orders shipped"], ["7 days", "Easy returns"], ["100%", "Cotton and linen"]],
-    reviews: [["The fit is perfect and the fabric feels premium.", "Rahul B."], ["Delivery in two days. Loved the linen dress.", "Sneha M."], ["Returns were painless. Will order again.", "Arjun K."]],
-    info: ["Studio 5, Sample Mills, Your City", "+91 98765 44444", "care@threadandco.example"], cta: ["Join the drop", "New pieces every Friday. Be first in line."],
-  },
-};
-Object.keys(EXTRA).forEach((k) => Object.assign(SITES[k], EXTRA[k]));
-
 function Cover({ id }) {
   const r = useRef(),
     [w, setW] = useState(360);
@@ -1701,132 +1655,252 @@ function Cover({ id }) {
 }
 function Site({ c }) {
   const [f, setF] = useState("All"),
-    [cart, setCart] = useState([]),
-    [showCart, setShowCart] = useState(false),
+    [n, setN] = useState(0),
     [ok, setOk] = useState(""),
-    [op, setOp] = useState(-1),
-    [liked, setLiked] = useState({});
-  const n = cart.reduce((a, x) => a + x.q, 0);
-  const num = (p) => Number(String(p).replace(/[^0-9]/g, ""));
-  const total = cart.reduce((a, x) => a + num(x.p) * x.q, 0);
-  const add = (t, p) => {
-    setCart((cs) => (cs.find((x) => x.t === t) ? cs.map((x) => (x.t === t ? { ...x, q: x.q + 1 } : x)) : [...cs, { t, p, q: 1 }]));
-    setOk("");
-  };
-  const jump = (i) => document.getElementById("s-" + i)?.scrollIntoView({ behavior: "smooth", block: "start" });
-  const onAc = c.dark ? "#000" : "#fff",
-    btn = { background: c.ac, borderColor: c.ac, color: onAc },
-    inp = { background: c.card, color: c.fg, border: "1px solid " + c.ac + "66" },
-    hd = { fontFamily: "'Space Grotesk',sans-serif", letterSpacing: "-.03em" },
-    bd = "1px solid " + c.ac + "44",
-    soft = c.dark ? "#ffffff0d" : "#0000000a",
-    textAc = c.dark ? c.ac : c.fg;
+    [op, setOp] = useState(-1);
+  const jump = (i) =>
+    document
+      .getElementById("s-" + i)
+      ?.scrollIntoView({ behavior: "smooth", block: "start" });
+  const inp = {
+      background: c.card,
+      color: c.fg,
+      border: "1px solid " + c.ac + "66",
+    },
+    onAc = c.dark ? "#000" : "#fff",
+    btn = { background: c.ac, borderColor: c.ac, color: onAc };
+  const hd = {
+      fontFamily: "'Space Grotesk',sans-serif",
+      letterSpacing: "-.03em",
+    },
+    bd = "1px solid " + c.ac + "44";
   const ey = (t) => (
-    <div style={{ color: c.dark ? c.ac : c.ac === "#111" ? "#666" : c.ac, fontSize: 12, letterSpacing: ".2em", textTransform: "uppercase" }}>{t}</div>
+    <div
+      style={{
+        color: c.ac,
+        fontSize: 12,
+        letterSpacing: ".2em",
+        textTransform: "uppercase",
+      }}
+    >
+      {t}
+    </div>
   );
   const chip = (x) => (
-    <button key={x} className="chip" style={f === x ? { background: c.ac, color: onAc, borderColor: c.ac } : { color: c.fg }} onClick={() => setF(x)}>{x}</button>
+    <button
+      key={x}
+      className="chip"
+      style={
+        f === x
+          ? { background: c.ac, color: onAc, borderColor: c.ac }
+          : { color: c.fg }
+      }
+      onClick={() => setF(x)}
+    >
+      {x}
+    </button>
   );
-  const E = (id, i) => c.cardEmoji?.[id]?.[i];
-  const names = c.blocks.map((b) => b.id);
-  const wrap = { maxWidth: 1040, margin: "0 auto", padding: "0 24px" };
-  const stars = <span style={{ color: "#f5a623", letterSpacing: 2 }}>★★★★★</span>;
+  const bg = c.badge || ["Sample", "Demo concept"];
   return (
     <div style={{ background: c.bg, color: c.fg }}>
-      {c.promo && (
-        <div style={{ background: c.ac, color: onAc, textAlign: "center", fontSize: 13, padding: "8px 12px", fontWeight: 500 }}>{c.promo}</div>
-      )}
-      <header style={{ position: "sticky", top: 0, zIndex: 5, background: c.bg + "ee", backdropFilter: "blur(10px)", borderBottom: bd }}>
-        <div style={{ ...wrap, display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 24px", flexWrap: "wrap", gap: 10 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <span style={{ width: 36, height: 36, borderRadius: 11, display: "grid", placeItems: "center", background: c.ac, color: onAc, fontWeight: 700, fontSize: 18 }}>{c.logo}</span>
-            <b style={{ ...hd, fontSize: 19, color: textAc }}>{c.name}</b>
-          </div>
-          <nav style={{ display: "flex", gap: 20, alignItems: "center", flexWrap: "wrap", fontSize: 14 }}>
-            {[...names, c.form.id].map((i) => (
-              <a key={i} href="#" onClick={(e) => { e.preventDefault(); jump(i); }}>{i}</a>
-            ))}
-            {c.blocks[0].t === "shop" ? (
-              <button className="btn" style={{ ...btn, padding: "7px 16px" }} onClick={() => setShowCart(!showCart)}>🛒 Cart ({n})</button>
-            ) : (
-              <button className="btn" style={{ ...btn, padding: "7px 16px" }} onClick={() => jump(c.form.id)}>{c.hero[2]}</button>
-            )}
-          </nav>
+      <header
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          padding: "18px 24px",
+          flexWrap: "wrap",
+          gap: 10,
+          maxWidth: 1100,
+          margin: "auto",
+        }}
+      >
+        <b style={{ ...hd, fontSize: 20, color: c.dark ? c.ac : c.fg }}>
+          {c.name}
+        </b>
+        <div
+          style={{
+            display: "flex",
+            gap: 18,
+            alignItems: "center",
+            flexWrap: "wrap",
+          }}
+        >
+          {[...c.blocks.map((b) => b.id), c.form.id].map((i) => (
+            <a
+              key={i}
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                jump(i);
+              }}
+            >
+              {i}
+            </a>
+          ))}
+          {c.blocks[0].t === "shop" && (
+            <button
+              className="btn"
+              style={{ ...btn, padding: "6px 14px" }}
+              onClick={() =>
+                setOk(
+                  n
+                    ? "Demo only: checkout isn't connected. " +
+                        n +
+                        " item(s) in your cart."
+                    : "Your cart is empty.",
+                )
+              }
+            >
+              Cart ({n})
+            </button>
+          )}
         </div>
       </header>
-      {showCart && (
-        <div style={{ position: "sticky", top: 64, zIndex: 6 }}>
-          <div style={{ position: "absolute", right: 24, width: 320, background: c.card, color: c.fg, border: bd, borderRadius: 16, padding: 18, boxShadow: "0 20px 60px #0005" }}>
-            <b style={hd}>Your cart</b>
-            {cart.length === 0 && <p style={{ opacity: 0.6, fontSize: 14 }}>Your cart is empty. Add something you like.</p>}
-            {cart.map((x) => (
-              <div key={x.t} style={{ display: "flex", justifyContent: "space-between", gap: 8, padding: "10px 0", borderBottom: bd, fontSize: 14 }}>
-                <span>{x.t} × {x.q}</span>
-                <span style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                  <b>₹{(num(x.p) * x.q).toLocaleString("en-IN")}</b>
-                  <button aria-label={"Remove " + x.t} onClick={() => setCart(cart.filter((y) => y.t !== x.t))} style={{ all: "unset", cursor: "pointer", opacity: 0.6 }}>✕</button>
-                </span>
-              </div>
-            ))}
-            {cart.length > 0 && (
-              <>
-                <div style={{ display: "flex", justifyContent: "space-between", margin: "14px 0", fontWeight: 600 }}><span>Total</span><span>₹{total.toLocaleString("en-IN")}</span></div>
-                <button className="btn" style={{ ...btn, width: "100%" }} onClick={() => { setOk("Demo only: checkout isn't connected. " + n + " item(s), ₹" + total.toLocaleString("en-IN") + "."); setShowCart(false); }}>Checkout</button>
-              </>
-            )}
-          </div>
+      {ok && (
+        <div
+          className="msg"
+          style={{
+            maxWidth: 1040,
+            margin: "0 auto 10px",
+            color: c.fg,
+            background: c.card,
+          }}
+          role="status"
+        >
+          {ok}
         </div>
       )}
-      {ok && <div className="msg" style={{ maxWidth: 1000, margin: "10px auto", color: c.fg, background: c.card }} role="status">{ok}</div>}
-
-      <div style={{ padding: "56px 24px 70px", background: `radial-gradient(circle at 80% 20%,${c.ac}44,transparent 55%)`, overflow: "hidden" }}>
-        <div style={{ maxWidth: 1040, margin: "auto", display: "grid", gap: 40, gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))", alignItems: "center" }}>
+      <div
+        style={{
+          padding: "56px 24px 80px",
+          background: `radial-gradient(circle at 80% 20%,${c.ac}55,transparent 55%)`,
+          overflow: "hidden",
+        }}
+      >
+        <div
+          style={{
+            maxWidth: 1040,
+            margin: "auto",
+            display: "grid",
+            gap: 40,
+            gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))",
+            alignItems: "center",
+          }}
+        >
           <div>
-            <span style={{ display: "inline-block", padding: "6px 14px", borderRadius: 99, background: soft, border: bd, fontSize: 13 }}>{stars} <span style={{ opacity: 0.75, marginLeft: 6 }}>{c.rating}</span></span>
-            <h1 style={{ ...hd, fontSize: "clamp(36px,6vw,66px)", lineHeight: 1, margin: "16px 0" }}>{c.hero[0]}</h1>
-            <p style={{ opacity: 0.75, maxWidth: 480, fontSize: 18 }}>{c.hero[1]}</p>
-            <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 22 }}>
-              <button className="btn" style={btn} onClick={() => jump(c.form.id)}>{c.hero[2]}</button>
-              <button className="btn g" style={{ color: c.fg, borderColor: c.ac + "99" }} onClick={() => jump(c.blocks[0].id)}>{c.hero[3] || "Explore"}</button>
-            </div>
-            <div style={{ display: "flex", gap: 22, marginTop: 28, fontSize: 13, opacity: 0.75, flexWrap: "wrap" }}>
-              <span>✓ Trusted locally</span><span>✓ Quick response</span><span>✓ Satisfaction promise</span>
+            {ey(c.name)}
+            <h1
+              style={{
+                ...hd,
+                fontSize: "clamp(36px,6vw,68px)",
+                lineHeight: 1,
+                margin: "14px 0",
+              }}
+            >
+              {c.hero[0]}
+            </h1>
+            <p style={{ opacity: 0.75, maxWidth: 480, fontSize: 18 }}>
+              {c.hero[1]}
+            </p>
+            <div
+              style={{
+                display: "flex",
+                gap: 12,
+                flexWrap: "wrap",
+                marginTop: 22,
+              }}
+            >
+              <button
+                className="btn"
+                style={btn}
+                onClick={() => jump(c.form.id)}
+              >
+                {c.hero[2]}
+              </button>
+              <button
+                className="btn g"
+                style={{ color: c.fg, borderColor: c.ac + "99" }}
+                onClick={() => jump(c.blocks[0].id)}
+              >
+                {c.hero[3] || "Explore"}
+              </button>
             </div>
           </div>
-          <div style={{ position: "relative", aspectRatio: "1", maxWidth: 400, width: "100%", justifySelf: "center" }}>
-            <div style={{ position: "absolute", inset: 0, borderRadius: "42% 58% 55% 45%", background: `linear-gradient(135deg,${c.ac},${c.ac}22)` }} />
-            <div style={{ position: "absolute", inset: "12%", borderRadius: "50%", background: c.card, boxShadow: "0 30px 70px #0005", display: "grid", placeItems: "center", fontSize: "clamp(90px,16vw,170px)", lineHeight: 1 }}>{c.art[0]}</div>
-            <div style={{ position: "absolute", right: "-2%", top: "8%", width: "26%", aspectRatio: "1", borderRadius: 22, background: c.card, boxShadow: "0 14px 40px #0004", display: "grid", placeItems: "center", fontSize: 44, transform: "rotate(8deg)" }}>{c.art[1]}</div>
-            <div style={{ position: "absolute", left: "2%", top: "14%", width: "22%", aspectRatio: "1", borderRadius: "50%", background: c.card, boxShadow: "0 14px 40px #0004", display: "grid", placeItems: "center", fontSize: 36 }}>{c.art[2]}</div>
-            <div style={{ position: "absolute", left: "-3%", bottom: "8%", background: c.card, color: c.fg, borderRadius: 16, padding: "12px 18px", boxShadow: "0 14px 40px #0004" }}>
-              <div style={{ fontSize: 12, opacity: 0.6 }}>{(c.badge || ["Sample", "Demo concept"])[0]}</div>
-              <b>{(c.badge || ["Sample", "Demo concept"])[1]}</b>
+          <div
+            style={{
+              position: "relative",
+              aspectRatio: "1",
+              maxWidth: 380,
+              width: "100%",
+              justifySelf: "center",
+            }}
+          >
+            <div
+              style={{
+                position: "absolute",
+                inset: 0,
+                borderRadius: "42% 58% 55% 45%",
+                background: `linear-gradient(135deg,${c.ac},${c.ac}22)`,
+              }}
+            />
+            <div
+              style={{
+                position: "absolute",
+                inset: "16%",
+                borderRadius: "50%",
+                border: "2px dashed " + (c.dark ? "#fff6" : "#0004"),
+              }}
+            />
+            <div
+              style={{
+                position: "absolute",
+                left: "-3%",
+                bottom: "10%",
+                background: c.card,
+                color: c.fg,
+                borderRadius: 16,
+                padding: "12px 18px",
+                boxShadow: "0 14px 40px #0004",
+              }}
+            >
+              <div style={{ fontSize: 12, opacity: 0.6 }}>{bg[0]}</div>
+              <b>{bg[1]}</b>
             </div>
           </div>
         </div>
       </div>
-
-      <div style={{ background: soft, borderBlock: bd }}>
-        <div style={{ ...wrap, display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(180px,1fr))", gap: 10, padding: "26px 24px", textAlign: "center" }}>
-          {c.stats.map(([a, b]) => (
-            <div key={b}><b style={{ ...hd, fontSize: 30, color: textAc }}>{a}</b><div style={{ opacity: 0.65, fontSize: 13 }}>{b}</div></div>
-          ))}
-        </div>
-      </div>
-
       {c.blocks.map((b) => (
-        <div id={"s-" + b.id} key={b.id} style={{ padding: "60px 24px", maxWidth: 1040, margin: "auto" }}>
+        <div
+          id={"s-" + b.id}
+          key={b.id}
+          style={{ padding: "60px 24px", maxWidth: 1040, margin: "auto" }}
+        >
           {ey(c.name)}
-          <h2 style={{ ...hd, fontSize: "clamp(28px,4vw,40px)", margin: "8px 0 0" }}>{b.id}</h2>
+          <h2
+            style={{
+              ...hd,
+              fontSize: "clamp(28px,4vw,40px)",
+              margin: "8px 0 0",
+            }}
+          >
+            {b.id}
+          </h2>
           {b.t === "cards" && (
             <div className="grid" style={{ marginTop: 24 }}>
-              {b.d.map(([t, d, p], k) => (
-                <div key={t} style={{ background: c.card, border: bd, borderRadius: 18, padding: 22 }}>
-                  {E(b.id, k) && <div style={{ width: 48, height: 48, borderRadius: 14, display: "grid", placeItems: "center", background: c.ac + "22", fontSize: 24, marginBottom: 12 }}>{E(b.id, k)}</div>}
+              {b.d.map(([t, d, p]) => (
+                <div
+                  key={t}
+                  style={{
+                    background: c.card,
+                    border: bd,
+                    borderRadius: 18,
+                    padding: 22,
+                  }}
+                >
                   <h3 style={hd}>{t}</h3>
                   <p style={{ opacity: 0.7, margin: "6px 0" }}>{d}</p>
-                  {p && <b style={{ color: textAc, fontSize: 20 }}>{p}</b>}
-                  {p && <button className="btn" style={{ ...btn, marginTop: 12, padding: "8px 18px", display: "block" }} onClick={() => jump(c.form.id)}>Choose</button>}
+                  {p && <b style={{ color: c.dark ? c.ac : c.fg }}>{p}</b>}
                 </div>
               ))}
             </div>
@@ -1834,7 +1908,15 @@ function Site({ c }) {
           {b.t === "steps" && (
             <div className="grid" style={{ marginTop: 24 }}>
               {b.d.map(([t, d], k) => (
-                <div key={t} style={{ background: c.card, border: bd, borderRadius: 18, padding: 22 }}>
+                <div
+                  key={t}
+                  style={{
+                    background: c.card,
+                    border: bd,
+                    borderRadius: 18,
+                    padding: 22,
+                  }}
+                >
                   <b style={{ ...hd, fontSize: 36, color: c.ac }}>0{k + 1}</b>
                   <h3 style={hd}>{t}</h3>
                   <p style={{ opacity: 0.7, margin: 0 }}>{d}</p>
@@ -1846,137 +1928,248 @@ function Site({ c }) {
             <div style={{ marginTop: 24 }}>
               {b.d.map(([q, a], k) => (
                 <div key={q} style={{ borderBottom: bd }}>
-                  <button onClick={() => setOp(op === k ? -1 : k)} aria-expanded={op === k} style={{ all: "unset", cursor: "pointer", display: "flex", justifyContent: "space-between", width: "100%", padding: "16px 0", fontWeight: 500 }}>
-                    {q}<span style={{ color: c.ac }}>{op === k ? "−" : "+"}</span>
+                  <button
+                    onClick={() => setOp(op === k ? -1 : k)}
+                    aria-expanded={op === k}
+                    style={{
+                      all: "unset",
+                      cursor: "pointer",
+                      display: "flex",
+                      justifyContent: "space-between",
+                      width: "100%",
+                      padding: "16px 0",
+                      fontWeight: 500,
+                    }}
+                  >
+                    {q}
+                    <span style={{ color: c.ac }}>{op === k ? "−" : "+"}</span>
                   </button>
-                  {op === k && <p style={{ opacity: 0.7, margin: "0 0 16px" }}>{a}</p>}
+                  {op === k && (
+                    <p style={{ opacity: 0.7, margin: "0 0 16px" }}>{a}</p>
+                  )}
                 </div>
               ))}
             </div>
           )}
           {b.t === "menu" && (
             <>
-              <div className="chips">{["All", ...new Set(b.d.map((x) => x[1]))].map(chip)}</div>
+              <div className="chips">
+                {["All", ...new Set(b.d.map((x) => x[1]))].map(chip)}
+              </div>
               <div style={{ marginTop: 14 }}>
-                {b.d.map((x, i) => [x, i]).filter(([x]) => f === "All" || x[1] === f).map(([[t, , p, d], i]) => (
-                  <div key={t} style={{ display: "flex", gap: 14, alignItems: "center", padding: "14px 0", borderBottom: "1px dashed " + c.ac + "55" }}>
-                    <span style={{ width: 56, height: 56, borderRadius: 14, display: "grid", placeItems: "center", background: c.ac + "22", fontSize: 28 }}>{c.menuEmoji?.[i]}</span>
-                    <div style={{ flex: 1 }}>
-                      <b>{t}</b> <span title="Vegetarian" style={{ display: "inline-block", width: 10, height: 10, border: "1.5px solid #2ca85a", marginLeft: 6, position: "relative", top: 1 }} />
-                      <div style={{ opacity: 0.65, fontSize: 14 }}>{d}</div>
+                {b.d
+                  .filter((x) => f === "All" || x[1] === f)
+                  .map(([t, , p, d]) => (
+                    <div
+                      key={t}
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        gap: 12,
+                        padding: "14px 0",
+                        borderBottom: "1px dashed " + c.ac + "55",
+                      }}
+                    >
+                      <div>
+                        <b>{t}</b>
+                        <div style={{ opacity: 0.65, fontSize: 14 }}>{d}</div>
+                      </div>
+                      <b style={{ color: c.ac }}>{p}</b>
                     </div>
-                    <b style={{ color: c.ac }}>{p}</b>
-                    <button className="btn" style={{ ...btn, padding: "6px 14px" }} onClick={() => setOk(t + " added to your order (demo).")}>Add</button>
-                  </div>
-                ))}
+                  ))}
               </div>
             </>
           )}
           {b.t === "chips" && (
-            <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginTop: 24 }}>
-              {b.d.map((t) => <span key={t} style={{ border: "1px solid " + c.ac, borderRadius: 999, padding: "8px 18px" }}>{t}</span>)}
+            <div
+              style={{
+                display: "flex",
+                gap: 10,
+                flexWrap: "wrap",
+                marginTop: 24,
+              }}
+            >
+              {b.d.map((t) => (
+                <span
+                  key={t}
+                  style={{
+                    border: "1px solid " + c.ac,
+                    borderRadius: 999,
+                    padding: "8px 18px",
+                  }}
+                >
+                  {t}
+                </span>
+              ))}
             </div>
           )}
           {b.t === "table" && (
             <div style={{ overflowX: "auto", marginTop: 20 }}>
               <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                <tbody>{b.d.map((r, k) => (<tr key={k} style={{ borderBottom: bd }}>{r.map((x, j) => (<td key={j} style={{ padding: 12, fontWeight: j === 0 ? 600 : 400 }}>{x}</td>))}</tr>))}</tbody>
+                <tbody>
+                  {b.d.map((r, k) => (
+                    <tr key={k} style={{ borderBottom: bd }}>
+                      {r.map((x, j) => (
+                        <td key={j} style={{ padding: 12 }}>
+                          {x}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
               </table>
             </div>
           )}
           {b.t === "tiles" && (
-            <div className="grid" style={{ marginTop: 24, gridTemplateColumns: "repeat(auto-fill,minmax(150px,1fr))" }}>
+            <div
+              className="grid"
+              style={{
+                marginTop: 24,
+                gridTemplateColumns: "repeat(auto-fill,minmax(150px,1fr))",
+              }}
+            >
               {b.d.map((t, k) => (
-                <div key={t} style={{ aspectRatio: "1", borderRadius: 18, display: "grid", placeItems: "center", alignContent: "center", gap: 6, color: "#fff", fontWeight: 500, background: `linear-gradient(135deg,hsl(${(c.dark ? 30 : 340) + k * 14},60%,${c.dark ? 28 : 55}%),hsl(${(c.dark ? 10 : 20) + k * 14},70%,${c.dark ? 18 : 70}%))` }}>
-                  <span style={{ fontSize: 40 }}>{c.tileEmoji?.[k]}</span>{t}
+                <div
+                  key={t}
+                  style={{
+                    aspectRatio: "1",
+                    borderRadius: 18,
+                    display: "grid",
+                    placeItems: "center",
+                    color: "#fff",
+                    fontWeight: 500,
+                    background: `linear-gradient(135deg,hsl(${(c.dark ? 30 : 340) + k * 14},60%,${c.dark ? 28 : 55}%),hsl(${(c.dark ? 10 : 20) + k * 14},70%,${c.dark ? 18 : 70}%))`,
+                  }}
+                >
+                  {t}
                 </div>
               ))}
             </div>
           )}
           {b.t === "shop" && (
             <>
-              <div className="chips">{["All", "Men", "Women", "Accessories"].map(chip)}</div>
-              <div className="grid" style={{ gridTemplateColumns: "repeat(auto-fill,minmax(200px,1fr))" }}>
-                {b.d.map((p, i) => [p, i]).filter(([p]) => f === "All" || p[1] === f).map(([[t, cat, pr, h], i]) => (
-                  <div key={t} style={{ background: c.card, borderRadius: 14, overflow: "hidden", border: bd }}>
-                    <div style={{ position: "relative", aspectRatio: "4/5", display: "grid", placeItems: "center", fontSize: 76, background: `linear-gradient(160deg,hsl(${h},35%,72%),hsl(${h},30%,42%))` }}>
-                      {c.shopEmoji?.[i]}
-                      {i % 3 === 0 && <span style={{ position: "absolute", left: 10, top: 10, background: "#111", color: "#fff", fontSize: 11, padding: "3px 10px", borderRadius: 99 }}>NEW</span>}
-                      <button aria-label="Save to wishlist" onClick={() => setLiked({ ...liked, [t]: !liked[t] })} style={{ all: "unset", cursor: "pointer", position: "absolute", right: 10, top: 10, width: 32, height: 32, borderRadius: "50%", background: "#fff", display: "grid", placeItems: "center", fontSize: 16, color: "#d6336c" }}>{liked[t] ? "♥" : "♡"}</button>
-                    </div>
-                    <div style={{ padding: 14 }}>
-                      <b>{t}</b>
-                      <div style={{ opacity: 0.6, fontSize: 13 }}>{cat} · {stars} <span style={{ opacity: 0.8 }}>4.{5 + (i % 4)}</span></div>
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 8 }}>
-                        <b>{pr}</b>
-                        <button className="btn" style={{ ...btn, padding: "6px 14px" }} onClick={() => add(t, pr)}>Add</button>
+              <div className="chips">
+                {["All", "Men", "Women", "Accessories"].map(chip)}
+              </div>
+              <div
+                className="grid"
+                style={{
+                  gridTemplateColumns: "repeat(auto-fill,minmax(200px,1fr))",
+                }}
+              >
+                {b.d
+                  .filter((p) => f === "All" || p[1] === f)
+                  .map(([t, cat, pr, h]) => (
+                    <div
+                      key={t}
+                      style={{
+                        background: c.card,
+                        borderRadius: 14,
+                        overflow: "hidden",
+                      }}
+                    >
+                      <div
+                        style={{
+                          aspectRatio: "4/5",
+                          background: `linear-gradient(160deg,hsl(${h},35%,70%),hsl(${h},30%,40%))`,
+                        }}
+                      />
+                      <div style={{ padding: 14 }}>
+                        <b>{t}</b>
+                        <div style={{ opacity: 0.6, fontSize: 13 }}>{cat}</div>
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            marginTop: 8,
+                          }}
+                        >
+                          <b>{pr}</b>
+                          <button
+                            className="btn"
+                            style={{ ...btn, padding: "6px 14px" }}
+                            onClick={() => {
+                              setN(n + 1);
+                              setOk("");
+                            }}
+                          >
+                            Add
+                          </button>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
               </div>
             </>
           )}
         </div>
       ))}
-
-      <div style={{ background: soft, borderBlock: bd, padding: "60px 24px" }}>
-        <div style={{ maxWidth: 1040, margin: "auto" }}>
-          {ey("Testimonials")}
-          <h2 style={{ ...hd, fontSize: "clamp(28px,4vw,40px)", margin: "8px 0 0" }}>What people say</h2>
-          <div className="grid" style={{ marginTop: 24 }}>
-            {c.reviews.map(([q, w]) => (
-              <figure key={w} style={{ margin: 0, background: c.card, border: bd, borderRadius: 18, padding: 22 }}>
-                {stars}
-                <blockquote style={{ margin: "10px 0 16px", opacity: 0.85 }}>“{q}”</blockquote>
-                <figcaption style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 14 }}>
-                  <span style={{ width: 34, height: 34, borderRadius: "50%", background: c.ac, color: onAc, display: "grid", placeItems: "center", fontWeight: 700 }}>{w[0]}</span>{w}
-                </figcaption>
-              </figure>
-            ))}
+      <div
+        id={"s-" + c.form.id}
+        style={{ padding: "60px 24px", maxWidth: 560, margin: "auto" }}
+      >
+        {ey("Enquiry")}
+        <h2 style={{ ...hd, fontSize: 36, margin: "8px 0 18px" }}>
+          {c.form.title}
+        </h2>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            e.target.reset();
+            setOk("Demo only: this form is a sample and nothing was sent.");
+          }}
+        >
+          <label style={{ color: c.fg }}>
+            Name
+            <input required style={inp} />
+          </label>
+          <label style={{ color: c.fg }}>
+            Email
+            <input type="email" required style={inp} />
+          </label>
+          {c.form.extra.map(([l, o]) => (
+            <label key={l} style={{ color: c.fg }}>
+              {l}
+              {typeof o === "string" ? (
+                <input type={o} required style={inp} />
+              ) : (
+                <select style={inp}>
+                  {o.map((x) => (
+                    <option key={x}>{x}</option>
+                  ))}
+                </select>
+              )}
+            </label>
+          ))}
+          <label style={{ color: c.fg }}>
+            Message
+            <textarea rows="3" style={inp} />
+          </label>
+          <button className="btn" style={btn}>
+            {c.form.btn}
+          </button>
+        </form>
+        {ok && (
+          <div
+            className="msg"
+            style={{ marginTop: 14, color: c.fg, background: c.card }}
+            role="status"
+          >
+            {ok}
           </div>
-        </div>
+        )}
       </div>
-
-      <div id={"s-" + c.form.id} style={{ padding: "60px 24px", maxWidth: 1040, margin: "auto", display: "grid", gap: 40, gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))", alignItems: "start" }}>
-        <div>
-          {ey("Enquiry")}
-          <h2 style={{ ...hd, fontSize: 36, margin: "8px 0 12px" }}>{c.cta[0]}</h2>
-          <p style={{ opacity: 0.75 }}>{c.cta[1]}</p>
-          <p style={{ opacity: 0.75, lineHeight: 2 }}>📍 {c.info[0]}<br />📞 {c.info[1]}<br />✉️ {c.info[2]}</p>
-        </div>
-        <div>
-          <h3 style={{ ...hd, fontSize: 22, margin: "0 0 14px" }}>{c.form.title}</h3>
-          <form onSubmit={(e) => { e.preventDefault(); e.target.reset(); setOk("Demo only: this form is a sample and nothing was sent."); }}>
-            <label style={{ color: c.fg }}>Name<input required style={inp} /></label>
-            <label style={{ color: c.fg }}>Email<input type="email" required style={inp} /></label>
-            {c.form.extra.map(([l, o]) => (
-              <label key={l} style={{ color: c.fg }}>
-                {l}
-                {typeof o === "string" ? <input type={o} required style={inp} /> : <select style={inp}>{o.map((x) => <option key={x}>{x}</option>)}</select>}
-              </label>
-            ))}
-            <label style={{ color: c.fg }}>Message<textarea rows="3" style={inp} /></label>
-            <button className="btn" style={btn}>{c.form.btn}</button>
-          </form>
-          {ok && <div className="msg" style={{ marginTop: 14, color: c.fg, background: c.card }} role="status">{ok}</div>}
-        </div>
-      </div>
-
-      <footer style={{ borderTop: bd, padding: "40px 24px 20px", fontSize: 14, background: soft }}>
-        <div style={{ ...wrap, padding: 0, display: "grid", gap: 30, gridTemplateColumns: "repeat(auto-fit,minmax(180px,1fr))" }}>
-          <div>
-            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-              <span style={{ width: 32, height: 32, borderRadius: 10, display: "grid", placeItems: "center", background: c.ac, color: onAc, fontWeight: 700 }}>{c.logo}</span>
-              <b style={{ ...hd, fontSize: 17 }}>{c.name}</b>
-            </div>
-            <p style={{ opacity: 0.65 }}>{c.hero[1]}</p>
-          </div>
-          <div><b>Explore</b><div style={{ display: "grid", gap: 6, marginTop: 8 }}>{[...names, c.form.id].map((i) => <a key={i} href="#" onClick={(e) => { e.preventDefault(); jump(i); }}>{i}</a>)}</div></div>
-          <div><b>Visit us</b><p style={{ opacity: 0.7, lineHeight: 1.9, margin: "8px 0 0" }}>{c.info[0]}<br />{c.info[1]}<br />{c.info[2]}</p></div>
-          <div><b>Follow</b><div style={{ display: "flex", gap: 8, marginTop: 10 }}>{["IG", "FB", "X", "YT"].map((s) => <span key={s} style={{ width: 34, height: 34, borderRadius: "50%", border: bd, display: "grid", placeItems: "center", fontSize: 11, fontWeight: 700 }}>{s}</span>)}</div></div>
-        </div>
-        <div style={{ textAlign: "center", opacity: 0.55, fontSize: 13, marginTop: 28 }}>© Sample concept by Veeva Creatives. Not a real business.</div>
+      <footer
+        style={{
+          padding: 24,
+          textAlign: "center",
+          opacity: 0.6,
+          fontSize: 13,
+          border: 0,
+        }}
+      >
+        © Sample concept by Veeva Creatives. Not a real business.
       </footer>
     </div>
   );
@@ -2150,40 +2343,11 @@ const SV = [
 ];
 const BUD = [
   "",
-  "Under ₹10,000",
-  "₹10,000 – ₹25,000",
-  "₹25,000 – ₹50,000",
-  "₹50,000+",
+  "Under ₹1,000",
+  "₹1000 – ₹2500",
+  "₹5000 – ₹5000",
+  "₹5000+",
 ];
-function ContactField({
-  label,
-  type = "text",
-  required = false,
-  value,
-  error,
-  onChange,
-  children,
-}) {
-  return (
-    <label>
-      {label}
-      {required && " *"}
-      {children || (
-        <input
-          type={type}
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          aria-invalid={!!error}
-        />
-      )}
-      {error && (
-        <span className="er" role="alert">
-          {error}
-        </span>
-      )}
-    </label>
-  );
-}
 function Contact({ service }) {
   const blank = {
     name: "",
@@ -2225,6 +2389,7 @@ function Contact({ service }) {
       .filter(([k]) => k !== "consent")
       .map(([k, x]) => k + ": " + x)
       .join("\n");
+    if (hp) return;
     setSt({ k: "loading" });
     try {
       const r = await fetch(ENQUIRY_ENDPOINT, {
@@ -2233,18 +2398,42 @@ function Contact({ service }) {
           "Content-Type": "application/json",
           Accept: "application/json",
         },
-        body: JSON.stringify({ ...v, website: hp }),
+        body: JSON.stringify({
+          ...v,
+          consent: "yes",
+          _subject: "New enquiry: " + v.service + " - " + v.name,
+          _template: "table",
+          _captcha: "false",
+          _replyto: v.email,
+        }),
       });
       const j = await r.json();
-      if (!r.ok || j.success !== true)
-        throw new Error(j.message || "The enquiry could not be saved.");
-      setSt({ k: "ok", emailSent: j.emailSent === true });
+      if (!r.ok || !(j.success === true || j.success === "true")) throw 0;
+      setSt({ k: "ok" });
       setV(blank);
-      setHp("");
     } catch {
       setSt({ k: "err", t: text });
     }
   };
+  const F = ({ k, l, type = "text", req, children }) => (
+    <label>
+      {l}
+      {req && " *"}
+      {children || (
+        <input
+          type={type}
+          value={v[k]}
+          onChange={(e) => set(k, e.target.value)}
+          aria-invalid={!!er[k]}
+        />
+      )}
+      {er[k] && (
+        <span className="er" role="alert">
+          {er[k]}
+        </span>
+      )}
+    </label>
+  );
   return (
     <section id="contact">
       <div
@@ -2285,45 +2474,16 @@ function Contact({ service }) {
             </a>
           </div>
         </div>
-        <form className="rv rv-r" onSubmit={submit} noValidate>
+        <form onSubmit={submit} noValidate>
           <div className="two">
-            <ContactField
-              label="Full Name"
-              value={v.name}
-              error={er.name}
-              onChange={(value) => set("name", value)}
-              required
-            />
-            <ContactField
-              label="Email Address"
-              type="email"
-              value={v.email}
-              error={er.email}
-              onChange={(value) => set("email", value)}
-              required
-            />
+            <F k="name" l="Full Name" req />
+            <F k="email" l="Email Address" type="email" req />
           </div>
           <div className="two">
-            <ContactField
-              label="Phone Number"
-              type="tel"
-              value={v.phone}
-              error={er.phone}
-              onChange={(value) => set("phone", value)}
-            />
-            <ContactField
-              label="Business or Brand Name"
-              value={v.brand}
-              error={er.brand}
-              onChange={(value) => set("brand", value)}
-            />
+            <F k="phone" l="Phone Number" type="tel" />
+            <F k="brand" l="Business or Brand Name" />
           </div>
-          <ContactField
-            label="Service Required"
-            value={v.service}
-            error={er.service}
-            required
-          >
+          <F k="service" l="Service Required" req>
             <select
               value={v.service}
               onChange={(e) => set("service", e.target.value)}
@@ -2333,13 +2493,9 @@ function Contact({ service }) {
                 <option key={s}>{s}</option>
               ))}
             </select>
-          </ContactField>
+          </F>
           <div className="two">
-            <ContactField
-              label="Project Budget (INR)"
-              value={v.budget}
-              error={er.budget}
-            >
+            <F k="budget" l="Project Budget (INR)">
               <select
                 value={v.budget}
                 onChange={(e) => set("budget", e.target.value)}
@@ -2350,12 +2506,8 @@ function Contact({ service }) {
                   </option>
                 ))}
               </select>
-            </ContactField>
-            <ContactField
-              label="Preferred Contact Method"
-              value={v.method}
-              error={er.method}
-            >
+            </F>
+            <F k="method" l="Preferred Contact Method">
               <select
                 value={v.method}
                 onChange={(e) => set("method", e.target.value)}
@@ -2364,20 +2516,15 @@ function Contact({ service }) {
                 <option>Phone</option>
                 <option>WhatsApp</option>
               </select>
-            </ContactField>
+            </F>
           </div>
-          <ContactField
-            label="Project Description"
-            value={v.desc}
-            error={er.desc}
-            required
-          >
+          <F k="desc" l="Project Description" req>
             <textarea
               rows="4"
               value={v.desc}
               onChange={(e) => set("desc", e.target.value)}
             />
-          </ContactField>
+          </F>
           <label style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
             <input
               type="checkbox"
@@ -2408,15 +2555,21 @@ function Contact({ service }) {
           </button>
           {st.k === "ok" && (
             <div className="msg" role="status">
-              Thank you for contacting Veeva Creatives! Your project request
-              has been saved. We'll review your requirements and get back to
-              you within 24 hours.
-              {st.emailSent && " A confirmation email has also been sent to you."}
+              Thank you for contacting Veeva Creatives! Your enquiry has been
+              submitted successfully. We'll review your requirements and get
+              back to you.
+            </div>
+          )}
+          {st.k === "mail" && (
+            <div className="msg" role="status">
+              Your email app has opened with the enquiry filled in. Press send
+              there to deliver it. (Direct submission is not configured yet.)
             </div>
           )}
           {st.k === "err" && (
             <div className="msg" role="alert">
-              Sorry, we couldn't save your request. Please try again or{" "}
+              Sorry, we couldn't send that. Your details are kept — try again or
+              email{" "}
               <a
                 className="pk"
                 href={
@@ -2633,15 +2786,10 @@ function Footer({ onAdmin }) {
     <footer>
       <div className="wrap fg">
         <div>
-          <button
-            className="logo"
-            type="button"
-            onClick={() => go("home")}
-            aria-label="Veeva Creatives home"
-          >
-            <img src="/assets/portfolio/veeva-logo.png" alt="" />
-            <span>VEEVA CREATIVES</span>
-          </button>
+          <div className="logo">
+            <Leaf />
+            veeva<span className="pk">.</span>
+          </div>
           <p className="mu" style={{ maxWidth: 340 }}>
             A creative and digital studio for posters, branding and websites.{" "}
             <b className="pk">We Create. You Grow.</b>
@@ -2686,10 +2834,6 @@ function App() {
     () => sessionStorage.getItem("veeva-welcome-seen") !== "1"
   );
   const [adminOpen, setAdminOpen] = useState(false);
-  // hold the hero entrance animations until the welcome intro has closed
-  React.useLayoutEffect(() => {
-    document.documentElement.classList.toggle("intro-on", welcomeVisible);
-  }, [welcomeVisible]);
   const [adminEntryVisible, setAdminEntryVisible] = useState(false);
   const [adminTab, setAdminTab] = useState("works");
   const [adminUnlocked, setAdminUnlocked] = useState(
