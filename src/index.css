@@ -2631,3 +2631,67 @@ footer .logo img{height:60px;width:80px}
   .hero h1 .w>span,.hero .up,.showcase{animation:none!important}
   .rv{opacity:1!important;translate:none!important;scale:none!important}
 }
+
+@media (max-width: 860px) {
+  html {
+    overflow-x: clip;
+  }
+  .burger {
+    position: relative;
+    z-index: 52;
+  }
+  .links {
+    z-index: 51;
+    width: min(78vw, 340px);
+    padding: calc(76px + env(safe-area-inset-top, 0px)) 20px 24px;
+  }
+}
+
+@media (max-width: 760px) {
+  section {
+    padding: 72px 0;
+  }
+  .wrap {
+    padding-right: clamp(16px, 5vw, 22px);
+    padding-left: clamp(16px, 5vw, 22px);
+  }
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+  }
+  .hero {
+    min-height: 100svh;
+    padding-top: 112px;
+    padding-bottom: 56px;
+  }
+  .hero h1 {
+    font-size: clamp(36px, 10.5vw, 58px);
+  }
+  .hero p {
+    font-size: 16px;
+    margin: 18px 0 24px;
+  }
+  .portfolio-book-heading h2 {
+    font-size: clamp(44px, 16vw, 76px);
+  }
+  .portfolio-cover-title {
+    font-size: clamp(42px, 15vw, 56px);
+  }
+  .portfolio-page-intro {
+    padding-right: 18px;
+    padding-left: 18px;
+  }
+  .portfolio-page-intro h1 {
+    font-size: clamp(40px, 14vw, 58px);
+  }
+  .modal {
+    max-height: calc(100svh - 24px);
+    padding: 18px;
+  }
+}
+
+@media (max-width: 640px) {
+  #about > .wrap,
+  #contact > .wrap {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+}

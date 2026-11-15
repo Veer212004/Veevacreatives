@@ -2155,6 +2155,35 @@ const BUD = [
   "₹25,000 – ₹50,000",
   "₹50,000+",
 ];
+function ContactField({
+  label,
+  type = "text",
+  required = false,
+  value,
+  error,
+  onChange,
+  children,
+}) {
+  return (
+    <label>
+      {label}
+      {required && " *"}
+      {children || (
+        <input
+          type={type}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          aria-invalid={!!error}
+        />
+      )}
+      {error && (
+        <span className="er" role="alert">
+          {error}
+        </span>
+      )}
+    </label>
+  );
+}
 function Contact({ service }) {
   const blank = {
     name: "",
@@ -2216,25 +2245,6 @@ function Contact({ service }) {
       setSt({ k: "err", t: text });
     }
   };
-  const F = ({ k, l, type = "text", req, children }) => (
-    <label>
-      {l}
-      {req && " *"}
-      {children || (
-        <input
-          type={type}
-          value={v[k]}
-          onChange={(e) => set(k, e.target.value)}
-          aria-invalid={!!er[k]}
-        />
-      )}
-      {er[k] && (
-        <span className="er" role="alert">
-          {er[k]}
-        </span>
-      )}
-    </label>
-  );
   return (
     <section id="contact">
       <div
@@ -2277,14 +2287,43 @@ function Contact({ service }) {
         </div>
         <form className="rv rv-r" onSubmit={submit} noValidate>
           <div className="two">
-            <F k="name" l="Full Name" req />
-            <F k="email" l="Email Address" type="email" req />
+            <ContactField
+              label="Full Name"
+              value={v.name}
+              error={er.name}
+              onChange={(value) => set("name", value)}
+              required
+            />
+            <ContactField
+              label="Email Address"
+              type="email"
+              value={v.email}
+              error={er.email}
+              onChange={(value) => set("email", value)}
+              required
+            />
           </div>
           <div className="two">
-            <F k="phone" l="Phone Number" type="tel" />
-            <F k="brand" l="Business or Brand Name" />
+            <ContactField
+              label="Phone Number"
+              type="tel"
+              value={v.phone}
+              error={er.phone}
+              onChange={(value) => set("phone", value)}
+            />
+            <ContactField
+              label="Business or Brand Name"
+              value={v.brand}
+              error={er.brand}
+              onChange={(value) => set("brand", value)}
+            />
           </div>
-          <F k="service" l="Service Required" req>
+          <ContactField
+            label="Service Required"
+            value={v.service}
+            error={er.service}
+            required
+          >
             <select
               value={v.service}
               onChange={(e) => set("service", e.target.value)}
@@ -2294,9 +2333,13 @@ function Contact({ service }) {
                 <option key={s}>{s}</option>
               ))}
             </select>
-          </F>
+          </ContactField>
           <div className="two">
-            <F k="budget" l="Project Budget (INR)">
+            <ContactField
+              label="Project Budget (INR)"
+              value={v.budget}
+              error={er.budget}
+            >
               <select
                 value={v.budget}
                 onChange={(e) => set("budget", e.target.value)}
@@ -2307,8 +2350,12 @@ function Contact({ service }) {
                   </option>
                 ))}
               </select>
-            </F>
-            <F k="method" l="Preferred Contact Method">
+            </ContactField>
+            <ContactField
+              label="Preferred Contact Method"
+              value={v.method}
+              error={er.method}
+            >
               <select
                 value={v.method}
                 onChange={(e) => set("method", e.target.value)}
@@ -2317,15 +2364,20 @@ function Contact({ service }) {
                 <option>Phone</option>
                 <option>WhatsApp</option>
               </select>
-            </F>
+            </ContactField>
           </div>
-          <F k="desc" l="Project Description" req>
+          <ContactField
+            label="Project Description"
+            value={v.desc}
+            error={er.desc}
+            required
+          >
             <textarea
               rows="4"
               value={v.desc}
               onChange={(e) => set("desc", e.target.value)}
             />
-          </F>
+          </ContactField>
           <label style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
             <input
               type="checkbox"
