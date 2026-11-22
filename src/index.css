@@ -363,7 +363,7 @@ nav {
   top: 0;
   left: 0;
   right: 0;
-  z-index: 500;
+  z-index: 50;
   background: #050505;
   padding: 14px 0;
   padding-top: calc(14px + env(safe-area-inset-top, 0px));
