@@ -8,8 +8,8 @@ const CONTACT = {
   email: "veevacreatives26@gmail.com",
   ig: "https://instagram.com/veeva_creatives?rpxt=bWpodGVsZTEzc2ky",
 };
-// Enquiries are emailed to CONTACT.email through FormSubmit (first submission needs a one-time activation click in the inbox).
-const ENQUIRY_ENDPOINT = "https://formsubmit.co/ajax/" + CONTACT.email;
+// Enquiries are stored and delivered by the local Express/Nodemailer server.
+const ENQUIRY_ENDPOINT = "/api/enquiries";
 
 const PORTFOLIO_PAGES = [
   "/assets/portfolio/pdf-page-1.jpg",
@@ -2273,10 +2273,6 @@ function Contact({ service }) {
     const e = check();
     setEr(e);
     if (Object.keys(e).length) return;
-    const text = Object.entries(v)
-      .filter(([k]) => k !== "consent")
-      .map(([k, x]) => k + ": " + x)
-      .join("\n");
     if (hp) return;
     setSt({ k: "loading" });
     try {
@@ -2288,19 +2284,32 @@ function Contact({ service }) {
         },
         body: JSON.stringify({
           ...v,
-          consent: "yes",
-          _subject: "New enquiry: " + v.service + " - " + v.name,
-          _template: "table",
-          _captcha: "false",
-          _replyto: v.email,
+          consent: true,
+          website: hp,
         }),
       });
       const j = await r.json();
-      if (!r.ok || !(j.success === true || j.success === "true")) throw 0;
-      setSt({ k: "ok" });
+      if (!r.ok || j.success !== true) {
+        if (r.status === 400 && j.errors) setEr(j.errors);
+        throw new Error(j.message || "The enquiry could not be submitted.");
+      }
+      setSt({
+        k: "ok",
+        emailSent: j.emailSent === true,
+        summary: {
+          name: v.name,
+          email: v.email,
+          phone: v.phone,
+          brand: v.brand,
+          service: v.service,
+          budget: v.budget,
+          method: v.method,
+          desc: v.desc,
+        },
+      });
       setV(blank);
-    } catch {
-      setSt({ k: "err", t: text });
+    } catch (error) {
+      setSt({ k: "err", t: error.message });
     }
   };
   const F = ({ k, l, type = "text", req, children }) => (
@@ -2461,9 +2470,18 @@ function Contact({ service }) {
           </button>
           {st.k === "ok" && (
             <div className="msg" role="status">
-              Thank you for contacting Veeva Creatives! Your enquiry has been
-              submitted successfully. We'll review your requirements and get
-              back to you.
+              <b>Thank you, {st.summary?.name}!</b>
+              <br />
+              Your enquiry has been received.{" "}
+              {st.emailSent
+                ? `A confirmation has been sent to ${st.summary?.email}.`
+                : "Email delivery is temporarily unavailable, but your enquiry is saved."}
+              <br />
+              <small>
+                {st.summary?.service}
+                {st.summary?.budget ? ` · ${st.summary.budget}` : ""}
+                {st.summary?.method ? ` · Preferred contact: ${st.summary.method}` : ""}
+              </small>
             </div>
           )}
           {st.k === "mail" && (
