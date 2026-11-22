@@ -72,7 +72,12 @@ test("stores a valid enquiry and sends the confirmation", async () => {
   const result = await response.json();
 
   assert.equal(response.status, 201);
-  assert.deepEqual(result, { success: true, emailSent: true });
+  assert.deepEqual(result, {
+    success: true,
+    emailSent: true,
+    studioNotified: true,
+    saved: true,
+  });
   assert.equal(
     db.prepare("SELECT COUNT(*) AS count FROM enquiries").get().count,
     1,
@@ -115,7 +120,12 @@ test("keeps the enquiry when email delivery is unavailable", async () => {
   const result = await response.json();
 
   assert.equal(response.status, 201);
-  assert.deepEqual(result, { success: true, emailSent: false });
+  assert.deepEqual(result, {
+    success: true,
+    emailSent: false,
+    studioNotified: false,
+    saved: true,
+  });
   assert.equal(
     db.prepare("SELECT COUNT(*) AS count FROM enquiries").get().count,
     2,

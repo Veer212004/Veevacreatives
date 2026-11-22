@@ -17,10 +17,14 @@ attempted. The API sends a confirmation to the customer and a notification to
 `STUDIO_EMAIL`. If email is unavailable, the enquiry remains saved and the site
 still confirms receipt.
 
-To enable email, set `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, and
-optionally `SMTP_SECURE` and `SMTP_FROM` in `.env`. Use an SMTP app password or
-provider credential; never put SMTP credentials in frontend code. The customer
-confirmation says the studio will respond within 24 hours.
+To send email from Gmail without owning a domain, enable Google 2-Step
+Verification and create a Google App Password. Set `SMTP_HOST=smtp.gmail.com`,
+`SMTP_PORT=465`, `SMTP_SECURE=true`, `SMTP_USER`, `SMTP_PASS` (the App Password,
+not the Gmail account password), and `SMTP_FROM` to the same Gmail address.
+Never put SMTP credentials in frontend code or commit them. For Vercel, add
+these values in Project Settings → Environment Variables, then redeploy. Gmail
+may apply sending limits; this setup is intended for normal enquiry volume, not
+bulk email. Customer confirmations include the submitted project details.
 
 For production, build the frontend and run `npm start` on a Node.js host with
 `NODE_ENV=production`. The Express server serves `dist/` and the API together.

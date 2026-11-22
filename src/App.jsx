@@ -2296,6 +2296,8 @@ function Contact({ service }) {
       setSt({
         k: "ok",
         emailSent: j.emailSent === true,
+        studioNotified: j.studioNotified === true,
+        saved: j.saved === true,
         summary: {
           name: v.name,
           email: v.email,
@@ -2475,7 +2477,11 @@ function Contact({ service }) {
               Your enquiry has been received.{" "}
               {st.emailSent
                 ? `A confirmation has been sent to ${st.summary?.email}.`
-                : "Email delivery is temporarily unavailable, but your enquiry is saved."}
+                : st.studioNotified
+                  ? `We received your enquiry, but couldn't send a confirmation to ${st.summary?.email}. Our team has been notified and will follow up.`
+                  : st.saved
+                    ? "Your enquiry is saved, but our team could not be notified by email. Please contact us directly to follow up."
+                    : "We couldn't send your enquiry. Please contact us directly."}
               <br />
               <small>
                 {st.summary?.service}

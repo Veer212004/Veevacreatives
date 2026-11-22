@@ -2,6 +2,7 @@ import "dotenv/config";
 import express from "express";
 import Database from "better-sqlite3";
 import nodemailer from "nodemailer";
+import { buildEnquiryEmail } from "./email-template.js";
 import { mkdirSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -53,68 +54,66 @@ export function createDatabase(databasePath) {
 }
 
 export function createEmailSender(env = process.env) {
-  const { SMTP_HOST, SMTP_USER, SMTP_PASS } = env;
-  const credentials = [SMTP_HOST, SMTP_USER, SMTP_PASS];
-  if (credentials.some(Boolean) && !credentials.every(Boolean))
-    throw new Error(
-      "SMTP_HOST, SMTP_USER, and SMTP_PASS must be set together.",
-    );
-  if (!credentials.some(Boolean)) return null;
+  const SMTP_HOST = env.SMTP_HOST || "smtp.gmail.com";
+  const { SMTP_USER, SMTP_PASS } = env;
+  if (Boolean(SMTP_USER) !== Boolean(SMTP_PASS))
+    throw new Error("SMTP_USER and SMTP_PASS must be set together.");
+  if (!SMTP_USER) return null;
 
-  const port = Number(env.SMTP_PORT || 587);
+  const port = Number(env.SMTP_PORT || 465);
   if (!Number.isInteger(port) || port < 1 || port > 65535)
     throw new Error("SMTP_PORT must be a valid port number.");
 
-  const from = env.SMTP_FROM || SMTP_USER;
+  const from = env.SMTP_FROM || `Veeva Creatives <${SMTP_USER}>`;
   const transporter = nodemailer.createTransport({
     host: SMTP_HOST,
     port,
-    secure: env.SMTP_SECURE === "true" || port === 465,
+    secure: env.SMTP_SECURE ? env.SMTP_SECURE === "true" : port === 465,
     auth: { user: SMTP_USER, pass: SMTP_PASS },
   });
 
   return async ({ enquiry, studioEmail }) => {
-    const details = [
-      `Name: ${enquiry.name}`,
-      `Email: ${enquiry.email}`,
-      `Phone: ${enquiry.phone || "Not provided"}`,
-      `Business or brand: ${enquiry.brand || "Not provided"}`,
-      `Service: ${enquiry.service}`,
-      `Budget: ${enquiry.budget || "Not provided"}`,
-      `Preferred contact method: ${enquiry.preferred_contact_method}`,
-      "",
-      "Project description:",
-      enquiry.description,
-    ].join("\n");
+    const customerEmail = buildEnquiryEmail({
+      title: `Thank you, ${enquiry.name}!`,
+      intro:
+        "We have received your project enquiry and will review the details. Our team will get back to you within 24 hours.",
+      enquiry,
+    });
+    const studioMessage = buildEnquiryEmail({
+      title: "New project enquiry",
+      intro: "A new enquiry was submitted through the Veeva Creatives website.",
+      enquiry,
+    });
     const results = await Promise.allSettled([
       transporter.sendMail({
         from,
         to: enquiry.email,
         subject: "We received your project enquiry — Veeva Creatives",
-        text: [
-          `Hi ${enquiry.name},`,
-          "",
-          "Thank you for contacting Veeva Creatives. We have received your project request and will review the details and get back to you within 24 hours.",
-          "",
-          "Your enquiry:",
-          details,
-          "",
-          "Warm regards,",
-          "Veeva Creatives",
-        ].join("\n"),
+        html: customerEmail.html,
+        text: customerEmail.text,
       }),
       transporter.sendMail({
         from,
         to: studioEmail,
         replyTo: enquiry.email,
         subject: `New project enquiry: ${enquiry.service} — ${enquiry.name}`,
-        text: details,
+        html: studioMessage.html,
+        text: studioMessage.text,
       }),
     ]);
 
+    const accepted = (result, recipient) =>
+      result.status === "fulfilled" &&
+      result.value.accepted?.some(
+        (address) =>
+          (typeof address === "string"
+            ? address
+            : address.address
+          )?.toLowerCase() === recipient.toLowerCase(),
+      );
     return {
-      customerSent: results[0].status === "fulfilled",
-      studioNotified: results[1].status === "fulfilled",
+      customerSent: accepted(results[0], enquiry.email),
+      studioNotified: accepted(results[1], studioEmail),
     };
   };
 }
@@ -226,10 +225,12 @@ export function createApp({
       });
 
       let emailSent = false;
+      let studioNotified = false;
       if (sendEmails) {
         try {
           const result = await sendEmails({ enquiry, studioEmail });
           emailSent = result.customerSent;
+          studioNotified = result.studioNotified;
           if (!result.customerSent || !result.studioNotified)
             console.error("One or more enquiry emails could not be delivered.");
         } catch (error) {
@@ -237,7 +238,9 @@ export function createApp({
         }
       }
 
-      return res.status(201).json({ success: true, emailSent });
+      return res
+        .status(201)
+        .json({ success: true, emailSent, studioNotified, saved: true });
     } catch (error) {
       return next(error);
     }
