@@ -287,12 +287,10 @@ const go = (id) =>
   document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
 
 function Nav() {
-  const [s, setS] = useState(false),
-    [o, setO] = useState(false),
+  const [o, setO] = useState(false),
     [a, setA] = useState("home");
   useEffect(() => {
     const f = () => {
-      setS(scrollY > 20);
       const ids = ["home", "work", "websites", "about", "contact"];
       let c = "home";
       ids.forEach((i) => {
@@ -302,7 +300,7 @@ function Nav() {
       setA(c);
     };
     f();
-    addEventListener("scroll", f);
+    addEventListener("scroll", f, { passive: true });
     return () => removeEventListener("scroll", f);
   }, []);
   const L = [
@@ -313,7 +311,7 @@ function Nav() {
     ["contact", "Contact"],
   ];
   return (
-    <nav className={s ? "s" : ""}>
+    <nav>
       <div className="wrap">
         <button
           className="logo"
@@ -2476,55 +2474,73 @@ function Contact({ service }) {
         </div>
         <form onSubmit={submit} noValidate>
           <div className="two">
-            <F k="name" l="Full Name" req />
-            <F k="email" l="Email Address" type="email" req />
+            {F({ k: "name", l: "Full Name", req: true })}
+            {F({ k: "email", l: "Email Address", type: "email", req: true })}
           </div>
           <div className="two">
-            <F k="phone" l="Phone Number" type="tel" />
-            <F k="brand" l="Business or Brand Name" />
+            {F({ k: "phone", l: "Phone Number", type: "tel" })}
+            {F({ k: "brand", l: "Business or Brand Name" })}
           </div>
-          <F k="service" l="Service Required" req>
-            <select
-              value={v.service}
-              onChange={(e) => set("service", e.target.value)}
-            >
-              <option value="">Select…</option>
-              {SV.map((s) => (
-                <option key={s}>{s}</option>
-              ))}
-            </select>
-          </F>
-          <div className="two">
-            <F k="budget" l="Project Budget (INR)">
+          {F({
+            k: "service",
+            l: "Service Required",
+            req: true,
+            children: (
               <select
-                value={v.budget}
-                onChange={(e) => set("budget", e.target.value)}
+                value={v.service}
+                onChange={(e) => set("service", e.target.value)}
               >
-                {BUD.map((b) => (
-                  <option key={b} value={b}>
-                    {b || "Select…"}
-                  </option>
+                <option value="">Select…</option>
+                {SV.map((s) => (
+                  <option key={s}>{s}</option>
                 ))}
               </select>
-            </F>
-            <F k="method" l="Preferred Contact Method">
-              <select
-                value={v.method}
-                onChange={(e) => set("method", e.target.value)}
-              >
-                <option>Email</option>
-                <option>Phone</option>
-                <option>WhatsApp</option>
-              </select>
-            </F>
+            ),
+          })}
+          <div className="two">
+            {F({
+              k: "budget",
+              l: "Project Budget (INR)",
+              children: (
+                <select
+                  value={v.budget}
+                  onChange={(e) => set("budget", e.target.value)}
+                >
+                  {BUD.map((b) => (
+                    <option key={b} value={b}>
+                      {b || "Select…"}
+                    </option>
+                  ))}
+                </select>
+              ),
+            })}
+            {F({
+              k: "method",
+              l: "Preferred Contact Method",
+              children: (
+                <select
+                  value={v.method}
+                  onChange={(e) => set("method", e.target.value)}
+                >
+                  <option>Email</option>
+                  <option>Phone</option>
+                  <option>WhatsApp</option>
+                </select>
+              ),
+            })}
           </div>
-          <F k="desc" l="Project Description" req>
-            <textarea
-              rows="4"
-              value={v.desc}
-              onChange={(e) => set("desc", e.target.value)}
-            />
-          </F>
+          {F({
+            k: "desc",
+            l: "Project Description",
+            req: true,
+            children: (
+              <textarea
+                rows="4"
+                value={v.desc}
+                onChange={(e) => set("desc", e.target.value)}
+              />
+            ),
+          })}
           <label style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
             <input
               type="checkbox"
