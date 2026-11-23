@@ -26,6 +26,9 @@ these values in Project Settings → Environment Variables, then redeploy. Gmail
 may apply sending limits; this setup is intended for normal enquiry volume, not
 bulk email. Customer confirmations include the submitted project details.
 
+The Git repository root contains `package.json`, `src/`, and `api/`; leave the
+Vercel Root Directory blank so the build and enquiry function are detected.
+
 For production, build the frontend and run `npm start` on a Node.js host with
 `NODE_ENV=production`. The Express server serves `dist/` and the API together.
 Mount persistent storage for the SQLite database (and set `DB_PATH` to that
