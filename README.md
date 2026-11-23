@@ -39,7 +39,13 @@ uses the original client address.
 
 ## Add work
 
-Edit `WORKS` in src/App.jsx. Put images in public/assets/portfolio and list their keys; similar posters go in one work's image list. Videos live in public/assets/video.
+Double-click or double-tap the Veeva Creatives logo in the top navigation and enter the
+server-side `ADMIN_CODE` to open the admin panel. Publishing a work commits
+its optimized images and metadata to the `GITHUB_BRANCH` (default `main`),
+which triggers the Vercel deployment. Set `ADMIN_CODE` and a fine-grained
+`GITHUB_TOKEN` as server environment variables; the token needs Contents
+read/write access to `GITHUB_REPOSITORY`. Never use a `VITE_` variable for
+admin credentials or GitHub tokens. Videos live in `public/assets/video`.
 
 ## Not done yet
 

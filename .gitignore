@@ -1,6 +1,8 @@
 node_modules/
 dist/
 data/
+!src/data/
+!src/data/admin-works.json
 .env
 .env.*
 !.env.example

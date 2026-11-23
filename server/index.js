@@ -2,6 +2,10 @@ import "dotenv/config";
 import express from "express";
 import Database from "better-sqlite3";
 import nodemailer from "nodemailer";
+import {
+  createAdminAuthHandler,
+  createAdminPublishHandler,
+} from "./admin-api.js";
 import { buildEnquiryEmail } from "./email-template.js";
 import { mkdirSync } from "node:fs";
 import path from "node:path";
@@ -186,9 +190,11 @@ export function createApp({
 
   app.disable("x-powered-by");
   app.set("trust proxy", trustProxyHops || false);
-  app.use(express.json({ limit: "16kb" }));
+  app.use(express.json({ limit: "4mb" }));
 
   app.get("/api/health", (_req, res) => res.json({ status: "ok" }));
+  app.post("/api/admin/auth", createAdminAuthHandler());
+  app.post("/api/admin/publish", createAdminPublishHandler());
 
   app.post("/api/enquiries", async (req, res, next) => {
     const now = Date.now();

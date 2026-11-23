@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import "./index.css";
+import COMMITTED_ADMIN_WORKS from "./data/admin-works.json";
 
 /* ===== CONFIG: edit here ===== */
 const CONTACT = {
@@ -286,9 +287,10 @@ const Head = ({ e, t, s }) => (
 const go = (id) =>
   document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
 
-function Nav() {
+function Nav({ onAdmin }) {
   const [o, setO] = useState(false),
     [a, setA] = useState("home");
+  const lastLogoClick = useRef(0);
   useEffect(() => {
     const f = () => {
       const ids = ["home", "work", "websites", "about", "contact"];
@@ -310,13 +312,24 @@ function Nav() {
     ["about", "About"],
     ["contact", "Contact"],
   ];
+  const handleLogoClick = () => {
+    const now = Date.now();
+    if (now - lastLogoClick.current < 500) {
+      lastLogoClick.current = 0;
+      onAdmin?.();
+      return;
+    }
+    lastLogoClick.current = now;
+    go("home");
+  };
   return (
     <nav>
       <div className="wrap">
         <button
           className="logo"
-          onClick={() => go("home")}
-          aria-label="Veeva Creatives home"
+          onClick={handleLogoClick}
+          aria-label="Veeva Creatives home. Double-click or double-tap to open admin login."
+          title="Double-click or double-tap to open admin login"
         >
           <img src="/assets/portfolio/veeva-logo.png" alt="" />
           <span>VEEVA CREATIVES</span>
@@ -989,12 +1002,17 @@ function Modal({ w, onClose, onNav }) {
 }
 
 function Reels() {
+  const videos = useRef([]);
   const R = [
     ["Launch Announcement Reel", "l"],
     ["Italy in Bowl — Product Reel", "i"],
     ["Behind the Design — Process Reel", "p"],
     ["Veeva Logo Reveal", "v"],
   ];
+  useEffect(
+    () => () => videos.current.forEach((video) => video?.pause()),
+    [],
+  );
   return (
     <div style={{ marginTop: 90 }}>
       <div className="eyebrow">Reels & Videos</div>
@@ -1006,14 +1024,22 @@ function Reels() {
         className="grid"
         style={{ gridTemplateColumns: "repeat(auto-fill,minmax(210px,1fr))" }}
       >
-        {R.map(([t, k]) => (
+        {R.map(([t, k], index) => (
           <div className="card rv" key={k} style={{ padding: 14 }}>
             <video
+              ref={(video) => {
+                videos.current[index] = video;
+              }}
               src={`/assets/video/${k}.mp4`}
               poster={`/assets/video/${k}.jpg`}
               controls
               playsInline
               preload="metadata"
+              onPlay={(event) => {
+                videos.current.forEach((video) => {
+                  if (video && video !== event.currentTarget) video.pause();
+                });
+              }}
               style={{
                 width: "100%",
                 aspectRatio: "9/16",
@@ -2548,34 +2574,65 @@ const resizeImage = (file, maxWidth = 800) => new Promise((resolve, reject) => {
   reader.readAsDataURL(file);
 });
 
-function AdminPanel({ works, pages, onSaveWorks, onSavePages, onClose, onUnlock, onLock, initialTab = "works", initiallyUnlocked = false }) {
+async function readAdminResponse(response, operation) {
+  const body = await response.text();
+  let result;
+  try {
+    result = body ? JSON.parse(body) : null;
+  } catch {
+    result = null;
+  }
+  if (!result || typeof result !== "object")
+    throw new Error(
+      `The admin ${operation} endpoint returned no valid response (HTTP ${response.status}). Make sure the latest API code is deployed and the API server is running.`,
+    );
+  if (!response.ok || result.success !== true)
+    throw new Error(result.message || `Admin ${operation} failed (HTTP ${response.status}).`);
+  return result;
+}
+
+function AdminPanel({ works, pages, onSaveWorks, onSavePages, onClose, onUnlock, onLock, adminCode, initialTab = "works", initiallyUnlocked = false }) {
   const [code, setCode] = useState("");
   const [unlocked, setUnlocked] = useState(initiallyUnlocked);
   const [tab, setTab] = useState(initialTab);
   const [error, setError] = useState("");
   const [uploading, setUploading] = useState(false);
+  const [publishing, setPublishing] = useState(false);
+  const [notice, setNotice] = useState("");
   const [draft, setDraft] = useState({
     title: "",
     category: "Posters",
     description: "",
     images: [],
   });
-  const adminCode = import.meta.env.VITE_ADMIN_CODE || "VEEVA2026";
-
-  const unlock = (event) => {
+  const unlock = async (event) => {
     event.preventDefault();
-    if (code === adminCode) {
+    setPublishing(true);
+    setError("");
+    try {
+      const response = await fetch("/api/admin/auth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code }),
+      });
+      await readAdminResponse(response, "login");
       setUnlocked(true);
-      setError("");
-      onUnlock?.();
-    } else {
-      setError("Incorrect admin code.");
+      onUnlock?.(code);
+    } catch (loginError) {
+      setError(loginError.message);
+    } finally {
+      setPublishing(false);
     }
   };
 
   const selectWorkImages = async (event) => {
     const files = Array.from(event.target.files || []);
     if (!files.length) return;
+    if (draft.images.length + files.length > 6) {
+      setError("Upload up to 6 images for each work.");
+      event.target.value = "";
+      return;
+    }
     setUploading(true);
     try {
       const images = await Promise.all(files.map((file) => resizeImage(file)));
@@ -2621,14 +2678,34 @@ function AdminPanel({ works, pages, onSaveWorks, onSavePages, onClose, onUnlock,
       deliver: ["Creative artwork"],
       images: draft.images,
     };
-    const saved = onSaveWorks([...works, work]);
-    if (saved === false) return;
-    setDraft({ title: "", category: "Posters", description: "", images: [] });
+    setPublishing(true);
     setError("");
+    setNotice("");
+    onSaveWorks({ action: "add", work }, adminCode)
+      .then((result) => {
+        setDraft({ title: "", category: "Posters", description: "", images: [] });
+        setNotice(
+          `Committed ${result.commit.slice(0, 7)} to GitHub. Vercel is deploying the update.`,
+        );
+      })
+      .catch((publishError) => setError(publishError.message))
+      .finally(() => setPublishing(false));
   };
 
-  const removeWork = (id) => {
-    onSaveWorks(works.filter((item) => item.id !== id));
+  const removeWork = async (id) => {
+    setPublishing(true);
+    setError("");
+    setNotice("");
+    try {
+      const result = await onSaveWorks({ action: "remove", id }, adminCode);
+      setNotice(
+        `Removal committed ${result.commit.slice(0, 7)}. Vercel is deploying the update.`,
+      );
+    } catch (publishError) {
+      setError(publishError.message);
+    } finally {
+      setPublishing(false);
+    }
   };
 
   return (
@@ -2648,7 +2725,9 @@ function AdminPanel({ works, pages, onSaveWorks, onSavePages, onClose, onUnlock,
               autoFocus
             />
             {error && <div className="admin-error">{error}</div>}
-            <button className="admin-primary" type="submit">Enter admin mode</button>
+            <button className="admin-primary" type="submit" disabled={publishing}>
+              {publishing ? "Checking..." : "Enter admin mode"}
+            </button>
           </form>
         ) : (
           <>
@@ -2667,6 +2746,7 @@ function AdminPanel({ works, pages, onSaveWorks, onSavePages, onClose, onUnlock,
               <button className={tab === "portfolio" ? "active" : ""} onClick={() => setTab("portfolio")}>Portfolio pages</button>
             </div>
             {error && <div className="admin-error">{error}</div>}
+            {notice && <div className="admin-success" role="status">{notice}</div>}
             {tab === "works" ? (
               <div className="admin-content">
                 <form className="admin-work-form" onSubmit={addWork}>
@@ -2684,7 +2764,9 @@ function AdminPanel({ works, pages, onSaveWorks, onSavePages, onClose, onUnlock,
                       {draft.images.map((image, index) => <img src={image} alt="" key={`${image.slice(-24)}-${index}`} />)}
                     </div>
                   )}
-                  <button className="admin-primary" type="submit" disabled={uploading}>Publish work</button>
+                  <button className="admin-primary" type="submit" disabled={uploading || publishing}>
+                    {publishing ? "Committing to GitHub..." : "Publish work"}
+                  </button>
                 </form>
                 <div className="admin-manage-list">
                   <span className="admin-kicker">PUBLISHED UPLOADS</span>
@@ -2692,7 +2774,7 @@ function AdminPanel({ works, pages, onSaveWorks, onSavePages, onClose, onUnlock,
                     <div className="admin-manage-item" key={item.id}>
                       <img src={item.images[0]} alt="" />
                       <div><strong>{item.title}</strong><small>{item.cat}</small></div>
-                      <button type="button" onClick={() => removeWork(item.id)}>Remove</button>
+                      <button type="button" disabled={publishing} onClick={() => removeWork(item.id)}>Remove</button>
                     </div>
                   ))}
                 </div>
@@ -2768,15 +2850,10 @@ function App() {
     () => sessionStorage.getItem("veeva-welcome-seen") !== "1"
   );
   const [adminOpen, setAdminOpen] = useState(false);
-  const [adminEntryVisible, setAdminEntryVisible] = useState(false);
   const [adminTab, setAdminTab] = useState("works");
-  const [adminUnlocked, setAdminUnlocked] = useState(
-    () => sessionStorage.getItem("veeva-admin-unlocked") === "1"
-  );
-  const [customWorks, setCustomWorks] = useState(() => {
-    try { return JSON.parse(localStorage.getItem("veeva-admin-works") || "[]"); }
-    catch { return []; }
-  });
+  const [adminUnlocked, setAdminUnlocked] = useState(false);
+  const [adminCode, setAdminCode] = useState("");
+  const [customWorks, setCustomWorks] = useState(COMMITTED_ADMIN_WORKS);
   const [customPages, setCustomPages] = useState(() => {
     try { return JSON.parse(localStorage.getItem("veeva-admin-pages") || "[]"); }
     catch { return []; }
@@ -2787,14 +2864,22 @@ function App() {
   });
   const works = [...BASE_WORKS, ...customWorks].filter((work) => !removedWorkIds.includes(work.id));
   const portfolioPages = [...PORTFOLIO_PAGES, ...customPages];
-  const saveWorks = (nextWorks) => {
-    try { localStorage.setItem("veeva-admin-works", JSON.stringify(nextWorks)); }
-    catch {
-      window.alert("Publishing failed: these images are too large for browser storage. Upload fewer images or smaller images.");
-      return false;
-    }
-    setCustomWorks(nextWorks);
-    return true;
+  const saveWorks = async (change, code) => {
+    const response = await fetch("/api/admin/publish", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${code}`,
+      },
+      body: JSON.stringify(change),
+    });
+    const result = await readAdminResponse(response, "publishing");
+    setCustomWorks((current) =>
+      change.action === "add"
+        ? [...current, { ...result.work, images: change.work.images }]
+        : current.filter((work) => work.id !== change.id),
+    );
+    return result;
   };
   const savePages = (nextPages) => {
     const customPagesToSave = nextPages.filter((page) => !PORTFOLIO_PAGES.includes(page));
@@ -2810,39 +2895,6 @@ function App() {
   const [portfolioPage, setPortfolioPage] = useState(
     () => new URLSearchParams(window.location.search).has("portfolio"),
   );
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const adminCode = import.meta.env.VITE_ADMIN_CODE || "VEEVA2026";
-    if (params.get("admin") === adminCode) {
-      sessionStorage.setItem("veeva-admin-unlocked", "1");
-      setAdminUnlocked(true);
-      setAdminTab("works");
-      setAdminOpen(true);
-      params.delete("admin");
-      window.history.replaceState({}, "", `${window.location.pathname}${params.toString() ? `?${params}` : ""}${window.location.hash}`);
-    }
-  }, []);
-  useEffect(() => {
-    let typedCode = "";
-    let resetTimer;
-    const openAdminWithCode = (event) => {
-      if (event.metaKey || event.ctrlKey || event.altKey) return;
-      if (["INPUT", "TEXTAREA", "SELECT"].includes(event.target.tagName)) return;
-      typedCode += event.key.toLowerCase();
-      typedCode = typedCode.slice(-12);
-      clearTimeout(resetTimer);
-      resetTimer = window.setTimeout(() => { typedCode = ""; }, 1400);
-      if (typedCode.endsWith("veer")) {
-        typedCode = "";
-        setAdminEntryVisible(true);
-      }
-    };
-    window.addEventListener("keydown", openAdminWithCode);
-    return () => {
-      window.removeEventListener("keydown", openAdminWithCode);
-      clearTimeout(resetTimer);
-    };
-  }, []);
   useEffect(() => {
     const syncPortfolioRoute = () => {
       setPortfolioPage(new URLSearchParams(window.location.search).has("portfolio"));
@@ -2867,19 +2919,7 @@ function App() {
     <>
       <FX />
       {welcomeVisible && <WelcomeIntro onComplete={closeWelcome} />}
-      <Nav />
-      {adminEntryVisible && !adminUnlocked && (
-        <button
-          className="admin-mode-enter"
-          type="button"
-          onClick={() => {
-            setAdminTab("works");
-            setAdminOpen(true);
-          }}
-        >
-          Enter admin mode
-        </button>
-      )}
+      <Nav onAdmin={() => openAdmin("works")} />
       <main>
         <Hero />
         <Marquee />
@@ -2890,7 +2930,12 @@ function App() {
           adminUnlocked={adminUnlocked}
           onAdmin={openAdmin}
           onDeleteWork={(id) => {
-            saveWorks(customWorks.filter((work) => work.id !== id));
+            if (String(id).startsWith("admin-")) {
+              saveWorks({ action: "remove", id }, adminCode).catch((error) =>
+                window.alert(error.message),
+              );
+              return;
+            }
             const nextRemovedIds = [...new Set([...removedWorkIds, id])];
             setRemovedWorkIds(nextRemovedIds);
             localStorage.setItem("veeva-removed-work-ids", JSON.stringify(nextRemovedIds));
@@ -2907,7 +2952,7 @@ function App() {
           className="admin-mode-exit"
           type="button"
           onClick={() => {
-            sessionStorage.removeItem("veeva-admin-unlocked");
+            setAdminCode("");
             setAdminUnlocked(false);
             setAdminOpen(false);
           }}
@@ -2924,12 +2969,13 @@ function App() {
           onClose={() => setAdminOpen(false)}
           initialTab={adminTab}
           initiallyUnlocked={adminUnlocked}
-          onUnlock={() => {
-            sessionStorage.setItem("veeva-admin-unlocked", "1");
+          adminCode={adminCode}
+          onUnlock={(code) => {
+            setAdminCode(code);
             setAdminUnlocked(true);
           }}
           onLock={() => {
-            sessionStorage.removeItem("veeva-admin-unlocked");
+            setAdminCode("");
             setAdminUnlocked(false);
             setAdminOpen(false);
           }}
