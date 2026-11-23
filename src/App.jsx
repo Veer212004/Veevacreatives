@@ -2231,10 +2231,10 @@ const SV = [
 ];
 const BUD = [
   "",
-  "Under ₹1,000",
-  "₹1000 – ₹2500",
-  "₹5000 – ₹5000",
-  "₹5000+",
+  "Under ₹10,000",
+  "₹10,000 – ₹25,000",
+  "₹25,000 – ₹50,000",
+  "₹50,000+",
 ];
 function Contact({ service }) {
   const blank = {
@@ -2290,7 +2290,11 @@ function Contact({ service }) {
       });
       const j = await r.json();
       if (!r.ok || j.success !== true) {
-        if (r.status === 400 && j.errors) setEr(j.errors);
+        if (r.status === 400 && j.errors) {
+          setEr(j.errors);
+          setSt({ k: "idle" });
+          return;
+        }
         throw new Error(j.message || "The enquiry could not be submitted.");
       }
       setSt({
@@ -2498,8 +2502,8 @@ function Contact({ service }) {
           )}
           {st.k === "err" && (
             <div className="msg" role="alert">
-              Sorry, we couldn't send that. Your details are kept — try again or
-              email{" "}
+              Sorry, we couldn't send that. Your details remain in the form.
+              Please try again or email{" "}
               <a
                 className="pk"
                 href={
